@@ -5,6 +5,8 @@ Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT
 See LICENSE in the project root for license information.
 
 #>
+#Import Graph authentication module
+Import-Module GraphAuth
 
 Function Get-DeviceConfigurationPolicy(){
 
@@ -323,7 +325,7 @@ function Import-DeviveConfigPoices{
     
     #Slect a Json file list
     if(!$JSONDirectory -or $JSONDirectory -eq ""){
-        Write-Host "Confirm import directory" -ForegroundColor Yellow
+        Write-Host "Confirm import directory..." -ForegroundColor Yellow
 
         [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
 
@@ -335,43 +337,39 @@ function Import-DeviveConfigPoices{
     
     $JASONFiles = (Get-ChildItem -Path $JSONDirectory -Filter "*.json").FullName
 
-    Write-Host "Importing the following Polices:"
-    Write-Host $JASONFiles -f Yellow
-
-    foreach($ImportPath in $JASONFiles){
+    Write-Host "Number of polices found: " $JASONFiles.count
+    $JASONFiles
+    if(!$JASONFiles){
     
-    if(!$ImportPath -or $ImportPath -eq ""){
-    $ImportPath = Read-Host -Prompt "Please specify a path to a JSON file to import data from e.g. C:\IntuneOutput\Policies\policy.json"
+        Write-Host "No JSON files found..." -ForegroundColor Red
+        Write-Host "Script can't continue..." -ForegroundColor Red
+        Write-Host
+        break
+        
+        }
+    else {
+            
+        foreach($ImportPath in $JASONFiles){
+        
+            $ImportPath = $ImportPath.replace('"','')
+                    
+            $JSON_Data = Get-Content "$ImportPath"
+            
+            # Excluding entries that are not required - id,createdDateTime,lastModifiedDateTime,version
+            $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version
+            
+            $DisplayName = $JSON_Convert.displayName
+            
+            $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
+                        
+            write-host
+            write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
+            write-host
+            $JSON_Output
+            write-host
+            Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
+            Remove-GrapAppLognin
+            #Add-DeviceConfigurationPolicy -JSON $JSON_Output
+        }
     }
-    # Replacing quotes for Test-Path
-    $ImportPath = $ImportPath.replace('"','')
-    
-    if(!(Test-Path "$ImportPath")){
-    
-    Write-Host "Import Path for JSON file doesn't exist..." -ForegroundColor Red
-    Write-Host "Script can't continue..." -ForegroundColor Red
-    Write-Host
-    break
-    
-    }
-    
-    
-    $JSON_Data = Get-Content "$ImportPath"
-    
-    # Excluding entries that are not required - id,createdDateTime,lastModifiedDateTime,version
-    $JSON_Convert = $JSON_Data | ConvertFrom-Json | Select-Object -Property * -ExcludeProperty id,createdDateTime,lastModifiedDateTime,version
-    
-    $DisplayName = $JSON_Convert.displayName
-    
-    $JSON_Output = $JSON_Convert | ConvertTo-Json -Depth 5
-                
-    write-host
-    write-host "Device Configuration Policy '$DisplayName' Found..." -ForegroundColor Yellow
-    write-host
-    $JSON_Output
-    write-host
-    Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
-    #Add-DeviceConfigurationPolicy -JSON $JSON_Output
-    }
-
 }
