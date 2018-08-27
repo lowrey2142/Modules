@@ -242,7 +242,7 @@ Function New-GraphAuthToken {
         [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
 
         $EUtitle = 'Azure user account'
-        $EUmsg   = 'To export the policies, please enter you Azure user account email address:'
+        $EUmsg   = 'To connect to your graph application, please enter you Azure user account email address:'
 
         $Global:Exportuser = [Microsoft.VisualBasic.Interaction]::InputBox($EUmsg, $EUtitle)
 
