@@ -290,7 +290,7 @@ function New-DeviceConfigExportPath {
             IF(!(Test-Path -Path $Backuplocation)){
 
                 New-Item -Path "$Backuplocation" -ItemType Directory
-
+                Get-ChildItem -Path "$DevConfExportPath" -Recurse | Move-Item -Destination "$Backuplocation" -ErrorAction SilentlyContinue
             }
             Else{
             Get-ChildItem -Path "$DevConfExportPath" -Recurse | Move-Item -Destination "$Backuplocation" -ErrorAction SilentlyContinue
@@ -348,7 +348,9 @@ function Import-DeviceConfigPolices{
         
         }
     else {
-            
+        Remove-GraphAppLogin
+        Write-Host "Please confirm the import tenant details" -f Yellow
+        New-GraphAuthToken
         foreach($ImportPath in $JASONFiles){
         
             $ImportPath = $ImportPath.replace('"','')
@@ -368,7 +370,6 @@ function Import-DeviceConfigPolices{
             $JSON_Output
             write-host
             Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
-            Remove-GraphAppLogin
             #Add-DeviceConfigurationPolicy -JSON $JSON_Output
         }
     }

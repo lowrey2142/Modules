@@ -93,7 +93,7 @@ Function Get-GraphAuthToken {
         [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
 
         $CIDtitle = 'Graph Application ID'
-        $CIDmsg   = 'Please confrim your Graph Application ID:'
+        $CIDmsg   = 'Please confirm your Graph Application ID:'
 
         $Global:clientId = [Microsoft.VisualBasic.Interaction]::InputBox($CIDmsg, $CIDtitle)
         Write-Host "Using AppID: " $clientId -ForegroundColor Yellow
@@ -109,7 +109,7 @@ Function Get-GraphAuthToken {
     [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
 
         $ReURititle = 'Application Redirect URL'
-        $ReURimsg   = 'Please confrim the application redirect url:'
+        $ReURimsg   = 'Please confirm the application redirect url:'
 
         $Global:redirectUri = [Microsoft.VisualBasic.Interaction]::InputBox($ReURimsg, $ReURititle)
 
@@ -136,7 +136,7 @@ Function Get-GraphAuthToken {
 
         $authResult = $authContext.AcquireTokenAsync($resourceAppIdURI,$clientId,$redirectUri,$platformParameters,$userId).Result
 
-            # If the accesstoken is valid then create the authentication header
+            # If the access token is valid then create the authentication header
 
             if($authResult.AccessToken){
 
@@ -150,7 +150,7 @@ Function Get-GraphAuthToken {
 
             return $authHeader
 
-            Write-Host "Authentication Token aquired" -ForegroundColor Cyan
+            Write-Host "Authentication Token acquired" -ForegroundColor Cyan
             Write-Host $authHeader -ForegroundColor Cyan
 
             }
@@ -184,7 +184,7 @@ Function New-GraphAuthToken {
     .SYNOPSIS
     This function is used to check for a current authentication token
     .DESCRIPTION
-    The function will check the for a vaid authentication token and refresh if it has expired. If not token is found the function with acquire a token
+    The function will check the for a valid authentication token and refresh if it has expired. If not token is found the function with acquire a token
     .EXAMPLE
     Get-AuthToken
     Authenticates you with the Graph API interface
@@ -253,7 +253,7 @@ Function New-GraphAuthToken {
 
     }
     }
-function Remove-GrapAppLognin {
+function Remove-GraphAppLogin {
     param (
 
     )
@@ -266,7 +266,7 @@ function Remove-GrapAppLognin {
 
 }
 
-function Remove-GrapAppID {
+function Remove-GraphAppID {
     param (
 
     )
@@ -284,7 +284,7 @@ Function Remove-GraphApp{
     .SYNOPSIS
     This function is used to force the user to authenticate
     .DESCRIPTION
-    The function will clear all the variables used to aquire an authentication token
+    The function will clear all the variables used to acquire an authentication token
     .EXAMPLE
     Remove-GraphApp
     Removes tokens and headers
@@ -303,12 +303,12 @@ Function Remove-GraphApp{
 
     'Yes' {
 
-        Remove-GrapAppLognin
+        Remove-GraphAppLogin
     }
 
     'No' {
 
-        Remove-GrapAppID
+        Remove-GraphAppID
 
     }
 
