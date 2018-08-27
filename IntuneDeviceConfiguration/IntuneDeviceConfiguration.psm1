@@ -251,7 +251,7 @@ function New-DeviceConfigExportPath {
         [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
 
         $DevConfigtitle = 'Export Directory'
-        $DevConfigmsg   = 'Please confrim the export directory:'
+        $DevConfigmsg   = 'Please confirm the export directory:'
 
         $Global:DevConfExportPath = [Microsoft.VisualBasic.Interaction]::InputBox($DevConfigmsg, $DevConfigtitle)
     }
@@ -321,16 +321,16 @@ function Save-DeviceConfigPolices {
     }
 }
 
-function Import-DeviveConfigPoices{
+function Import-DeviceConfigPolices{
     
-    #Slect a Json file list
+    #Select a Json file list
     if(!$JSONDirectory -or $JSONDirectory -eq ""){
         Write-Host "Confirm import directory..." -ForegroundColor Yellow
 
         [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
 
         $DevConfigtitle = 'Device Config JSON Directory'
-        $DevConfigmsg   = 'Please confrim the import directory:'
+        $DevConfigmsg   = 'Please confirm the import directory:'
 
         $Global:JSONDirectory = [Microsoft.VisualBasic.Interaction]::InputBox($DevConfigmsg, $DevConfigtitle)
     }
@@ -368,7 +368,7 @@ function Import-DeviveConfigPoices{
             $JSON_Output
             write-host
             Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
-            Remove-GrapAppLognin
+            Remove-GraphAppLogin
             #Add-DeviceConfigurationPolicy -JSON $JSON_Output
         }
     }
