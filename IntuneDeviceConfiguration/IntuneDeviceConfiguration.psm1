@@ -283,7 +283,7 @@ function New-DeviceConfigExportPath {
         }
 
         else {
-            $DevConfExportPath = "C:\Temp\Intune\Devconf"
+            
             $CDate = (Get-Date -Format dd-MM-yy)
             $Backuplocation = "$DevConfExportPath\$CDate"
 

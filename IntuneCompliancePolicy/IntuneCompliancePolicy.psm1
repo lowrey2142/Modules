@@ -143,7 +143,7 @@ function New-DeviceCompExportPath {
     }
 
     else {
-        $DevCompExportPath = "C:\Temp\Intune\Devcomp"
+        
         $CDate = (Get-Date -Format dd-MM-yy)
         $Backuplocation = "$DevCompExportPath\$CDate"
 
@@ -160,6 +160,133 @@ function New-DeviceCompExportPath {
     }
 }
 
+Function Export-JSONData() {
+
+    <#
+    .SYNOPSIS
+    This function is used to export JSON data returned from Graph
+    .DESCRIPTION
+    This function is used to export JSON data returned from Graph
+    .EXAMPLE
+    Export-JSONData -JSON $JSON
+    Export the JSON inputted on the function
+    .NOTES
+    NAME: Export-JSONData
+    #>
+
+    param (
+
+        $JSON,
+        $ExportPath
+
+    )
+
+    try {
+
+        if (!$JSON -or $JSON -eq "") {
+
+            write-host "No JSON specified, please specify valid JSON..." -f Red
+
+        }
+
+        elseif (!$DevConfExportPath) {
+
+            write-host "No export path parameter set, please provide a path to export the file" -f Red
+
+        }
+
+        elseif (!(Test-Path $ExportPath)) {
+
+            write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
+
+        }
+
+        else {
+
+            $JSON1 = ConvertTo-Json $JSON -Depth 5
+
+            $JSON_Convert = $JSON1 | ConvertFrom-Json
+
+            $displayName = $JSON_Convert.displayName
+
+            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+
+            $Properties = ($JSON_Convert | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" }).Name
+
+            $FileName_CSV = "$DisplayName" + "_" + $(get-date -f dd-MM-yyyy-H-mm-ss) + ".csv"
+            $FileName_JSON = "$DisplayName" + "_" + $(get-date -f dd-MM-yyyy-H-mm-ss) + ".json"
+
+            $Object = New-Object System.Object
+
+            foreach ($Property in $Properties) {
+
+                $Object | Add-Member -MemberType NoteProperty -Name $Property -Value $JSON_Convert.$Property
+
+            }
+
+            write-host "Export Path:" "$ExportPath"
+
+            $Object | Export-Csv -LiteralPath "$ExportPath\$FileName_CSV" -Delimiter "," -NoTypeInformation -Append
+            $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+            write-host "CSV created in $ExportPath\$FileName_CSV..." -f cyan
+            write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
+
+        }
+
+    }
+
+    catch {
+
+        $_.Exception
+
+    }
+
+}
+
+Function Test-JSON() {
+
+    <#
+        .SYNOPSIS
+        This function is used to test if the JSON passed to a REST Post request is valid
+        .DESCRIPTION
+        The function tests if the JSON passed to the REST Post is valid
+        .EXAMPLE
+        Test-JSON -JSON $JSON
+        Test if the JSON is valid before calling the Graph REST interface
+        .NOTES
+        NAME: Test-AuthHeader
+        #>
+        
+    param (
+        
+        $JSON
+        
+    )
+        
+    try {
+        
+        $TestJSON = ConvertFrom-Json $JSON -ErrorAction Stop
+        $validJson = $true
+        
+    }
+        
+    catch {
+        
+        $validJson = $false
+        $_.Exception
+        
+    }
+        
+    if (!$validJson) {
+            
+        Write-Host "Provided JSON isn't in valid JSON format" -f Red
+        break
+        
+    }
+        
+}
+
 function Save-DeviceCompPolices {
 
     New-DeviceCompExportPath
@@ -170,11 +297,11 @@ function Save-DeviceCompPolices {
 
     $CPs = Get-DeviceCompliancePolicy
 
-    foreach($CP in $CPs){
+    foreach ($CP in $CPs) {
 
-    write-host "Device Compliance Policy:"$CP.displayName -f Yellow
-    Export-JSONData -JSON $CP -ExportPath "$DevCompExportPath"
-    Write-Host
+        write-host "Device Compliance Policy:"$CP.displayName -f Yellow
+        Export-JSONData -JSON $CP -ExportPath "$DevCompExportPath"
+        Write-Host
 
     }
 
