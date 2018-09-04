@@ -26,8 +26,8 @@ Function Get-GraphAuthToken {
         [Parameter(Mandatory=$true)]
         $user
     )
-    Write-Host "Using UPN: " $Exportuser -ForegroundColor Yellow
-    $Global:userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $Exportuser
+    Write-Host "Using UPN: " $user -ForegroundColor Yellow
+    $Global:userUpn = New-Object "System.Net.Mail.MailAddress" -ArgumentList $user
 
     Write-Host "Searching for tenant..." -ForegroundColor Yellow
     $Global:tenant = $userUpn.Host
@@ -85,40 +85,10 @@ Function Get-GraphAuthToken {
 
     [System.Reflection.Assembly]::LoadFrom($adalforms) | Out-Null
 
-    #$clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
-    if(!$clientId -or $clientId  -eq ""){
-
-        Write-Host "Please confirm your Application ID" -ForegroundColor Yellow
-
-        [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
-
-        $CIDtitle = 'Graph Application ID'
-        $CIDmsg   = 'Please confirm your Graph Application ID:'
-
-        $Global:clientId = [Microsoft.VisualBasic.Interaction]::InputBox($CIDmsg, $CIDtitle)
-        Write-Host "Using AppID: " $clientId -ForegroundColor Yellow
-    }else{
-
-        Write-Host "Using AppID: " $clientId -ForegroundColor Yellow
-    }
-    #$redirectUri = "urn:ietf:wg:oauth:2.0:oob"
-    if(!$redirectUri -or $redirectUri  -eq ""){
-
-        Write-Host "Please confirm you Application uri" -ForegroundColor Yellow
-
-    [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
-
-        $ReURititle = 'Application Redirect URL'
-        $ReURimsg   = 'Please confirm the application redirect url:'
-
-        $Global:redirectUri = [Microsoft.VisualBasic.Interaction]::InputBox($ReURimsg, $ReURititle)
-
-        Write-Host "Using RedirectUri: " $redirectUri -ForegroundColor Yellow
-    }else{
-
-        Write-Host "Using RedirectUri: " $RedirectUri -ForegroundColor Yellow
-    }
-
+    $clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
+   
+    $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
+    
     $resourceAppIdURI = "https://graph.microsoft.com"
 
     $authority = "https://login.microsoftonline.com/$Tenant"
@@ -237,19 +207,19 @@ Function New-GraphAuthToken {
 
     else {
 
-        if(!$Exportuser -or $Exportuser -eq ""){
+        if(!$Graphuser -or $Graphuser -eq ""){
 
         [void][Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic')
 
         $EUtitle = 'Azure user account'
         $EUmsg   = 'To connect to your graph application, please enter you Azure user account email address:'
 
-        $Global:Exportuser = [Microsoft.VisualBasic.Interaction]::InputBox($EUmsg, $EUtitle)
+        $Global:Graphuser = [Microsoft.VisualBasic.Interaction]::InputBox($EUmsg, $EUtitle)
 
         }
 
     # Getting the authorization token
-    $global:authToken = Get-GraphAuthToken -User $Exportuser
+    $global:authToken = Get-GraphAuthToken -User $Graphuser
 
     }
     }
@@ -260,12 +230,8 @@ function Remove-GraphAppLogin {
 
     Clear-Variable authToken -Scope Global
     Clear-Variable authHeader -Scope Global
-    Clear-Variable Exportuser -Scope Global
-    Clear-Variable clientId -Scope Global
-    Clear-Variable redirectUri -Scope Global
-
-}
-
+    Clear-Variable Graphuser -Scope Global
+    }
 function Remove-GraphAppID {
     param (
 
@@ -273,11 +239,7 @@ function Remove-GraphAppID {
 
     Clear-Variable authToken -Scope Global
     Clear-Variable authHeader -Scope Global
-    Clear-Variable clientId -Scope Global
-    Clear-Variable redirectUri -Scope Global
-
 }
-
 Function Remove-GraphApp{
 
     <#

@@ -348,7 +348,7 @@ function Import-DeviceConfigPolices{
         
         }
     else {
-        Remove-GraphAppLogin
+        
         Write-Host "Please confirm the import tenant details" -f Yellow
         New-GraphAuthToken
         foreach($ImportPath in $JASONFiles){
@@ -370,7 +370,8 @@ function Import-DeviceConfigPolices{
             $JSON_Output
             write-host
             Write-Host "Adding Device Configuration Policy '$DisplayName'" -ForegroundColor Yellow
-            #Add-DeviceConfigurationPolicy -JSON $JSON_Output
+            Add-DeviceConfigurationPolicy -JSON $JSON_Output
         }
     }
+    Remove-GraphAppLogin
 }
