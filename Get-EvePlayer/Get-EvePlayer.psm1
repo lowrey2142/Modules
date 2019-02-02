@@ -30,25 +30,40 @@ $RESTParams = @{
 
 		If ($AID){
 
-			Get-AlliancePublicData -Org 'alliances' -corpID "$AID"
+            #Get players alliacne
+            Get-AlliancePublicData -Org 'alliances' -corpID "$AID"
 			$AName = $PlayerAlliance.name
-			$PlayerPublicData | Add-Member -NotePropertyName 'alliance_name' -NotePropertyValue "$AName"
+            $PlayerPublicData | Add-Member -NotePropertyName 'alliance_name' -NotePropertyValue "$AName"
+            
+            #Creat Alliance image url
+            $AImageUrl = "https://imageserver.eveonline.com/Alliance/$AID"+"_128.png"
+            $PlayerPublicData | Add-Member -NotePropertyName 'alliance_image_url' -NotePropertyValue "$AImageUrl"
 
+            #Get players corporation
 			Get-AlliancePublicData -Org 'corporations' -corpID "$CID"
 			$CName = $PlayerAlliance.name
-			$PlayerPublicData | Add-Member -NotePropertyName 'corporation_name' -NotePropertyValue "$CName"
+            $PlayerPublicData | Add-Member -NotePropertyName 'corporation_name' -NotePropertyValue "$CName"
+            
+            #Creat corporation image url
+            $CImageUrl = "https://imageserver.eveonline.com/Corporation/$CID"+"_256.png"
+            $PlayerPublicData | Add-Member -NotePropertyName 'corporation_image_url' -NotePropertyValue "$CImageUrl"
 
-			#$PlayerPublicData
 		}
 		Else{
 			
 			Get-AlliancePublicData -Org 'corporations' -corpID "$CID"
 			$CName = $PlayerAlliance.name
-			$PlayerPublicData | Add-Member -NotePropertyName 'corporation_name' -NotePropertyValue "$CName"
-
-			#$PlayerPublicData
-		
-	}
+            $PlayerPublicData | Add-Member -NotePropertyName 'corporation_name' -NotePropertyValue "$CName"
+            
+            #Creat corporation image url
+            $CImageUrl = "https://imageserver.eveonline.com/Corporation/$CID"+"_256.png"
+            $PlayerPublicData | Add-Member -NotePropertyName 'corporation_image_url' -NotePropertyValue "$CImageUrl"
+	
+    }
+    
+    #Creat Player image url
+    $PlayerImageUrl = "https://image.eveonline.com/Character/$player"+"_256.jpg"
+    $PlayerPublicData | Add-Member -NotePropertyName 'player_image_url' -NotePropertyValue "$PlayerImageUrl"
 			  
   } # End of Process
 }
